@@ -1,49 +1,45 @@
-# Fluent Bit Plugin
+# Fluent Bit Modbus Plugin
 
-The following repository provides the structure and build-system helpers to develop C dynamic plugins for [Fluent Bit](https://fluentbit.io) like _inputs_, _filters_ and _outputs_.
-
->  Fluent Bit API development/usage is out of the scope of this article.
+[Modbus](https://en.wikipedia.org/wiki/Modbus) is a well-known communication protocol to connect industrial devices. This repository provides the source code to build Modbus dynamic input plugin to use in Fluent Bit.
 
 ## Requirements
 
 - [Fluent Bit](https://fluentbit.io) Source code, version >= 1.2
+- [libmodbus](https://github.com/stephane/libmodbus) Source code, version >= v3.1.4
 - C compiler: GCC or Clang
 - CMake3
 
 ## Getting Started
 
-In the following steps we will build the example plugin provided called __out_stdout2__. As a first step get into the _build/_ directory:
+Build the static libarary for `libmodbus` (assuming that `$LIBMODBUS_DIR` stores the absolute location of `libmodbus` directory):
 
 ```bash
-$ cd build/
+$ cd $LIBMODBUS_DIR
+$ ./autogen.sh
+$ ./configure --enable_static
+$ make
 ```
 
-Now we will provide CMake (our build system) two important variables:
+Provide the following variables for the CMake:
 
 - FLB\_SOURCE: absolute path to source code of Fluent Bit.
-- PLUGIN\_NAME: _directory_ name of the project that we aim to build. Note that any plugin name must have it proper prefix as the example mentioned above.
+- MODBUS\_SOURCE: absolute path to source code of libmodbus.
+- PLUGIN\_NAME: `in_modbus`
 
-Assuming that Fluent Bit source code is located at /tmp/fluent-bit and we will build _out\_stdout2_, we will run CMake with the following options:
+Assuming that `$FLUENTBIT_DIR` and `$LIBMODBUS_DIR` store absolute locations of Fluent Bit and libmodbus, run the following in order to create Modbus shared library:
 
 ```bash
-$ cmake -DFLB_SOURCE=/tmp/fluent-bit -DPLUGIN_NAME=out_stdout2 ../
+$ cmake -DFLB_SOURCE=$FLUENTBIT_DIR -DMODBUS_SOURCE=$LIBMODBUS_DIR -DPLUGIN_NAME=in_modbus ../
 ```
 
 then type 'make' to build the plugin:
 
 ```
 $ make
-Scanning dependencies of target flb-out_stdout2
-[ 50%] Building C object out_stdout2/CMakeFiles/flb-out_stdout2.dir/stdout2.c.o
-[100%] Linking C shared library ../flb-out_stdout2.so
-[100%] Built target flb-out_stdout2
+Scanning dependencies of target flb-in_modbus
+[ 50%] Building C object in_modbus/CMakeFiles/flb-in_modbus.dir/in_modbus.c.o
+[100%] Linking C shared library ../flb-in_modbus.so
+[100%] Built target flb-in_modbus
 ```
 
-If you query the content of the current directory you will find the new shared library created:
-
-```
-$ ls -l *.so
--rwxr-xr-x 1 edsiper edsiper 17288 jun 20 16:33 flb-out_stdout2.so
-```
-
-that __.so__ file is our dynamic plugin that now can be loaded from Fluent Bit through the [plugins configuration](https://github.com/fluent/fluent-bit/blob/master/conf/plugins.conf) file.
+Add the path to created __.so__ file to the plugins configuration file in order to call it from Fluent Bit (see [plugins configuration](https://github.com/fluent/fluent-bit/blob/master/conf/plugins.conf)).
