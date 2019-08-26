@@ -2,8 +2,7 @@
 
 /*  Fluent Bit
  *  ==========
- *  Copyright (C) 2019      The Fluent Bit Authors
- *  Copyright (C) 2015-2018 Treasure Data Inc.
+ *  Copyright (C) 2019  ARM Limited, All Rights Reserved
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,22 +23,23 @@
 #include <modbus.h>
 
 struct flb_in_modbus_config {
-	/* nop stands for Number of Points */
-	modbus_t *modbus_ctx;
+    /* 'no' postfix stands for Number of Points */
+    modbus_t *modbus_ctx;
+    int err;
 
-	int time_interval_sec;
+    int time_interval_sec;
 
-	int coil_addr;
-	int coil_nop;
+    int coil_addr;
+    int coil_no;
 
-	int discrete_input_addr;
-	int discrete_input_nop;
+    int discrete_input_addr;
+    int discrete_input_no;
 
-	int holding_reg_addr;
-	int holding_reg_nop;
+    int holding_reg_addr;
+    int holding_reg_no;
 
-	int input_reg_addr;
-	int input_reg_nop;
+    int input_reg_addr;
+    int input_reg_no;
 };
 
 #endif
