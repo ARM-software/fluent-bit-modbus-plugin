@@ -404,6 +404,13 @@ static int in_modbus_init(struct flb_input_instance *in,
 
 static int in_modbus_exit(void *data, struct flb_config *config)
 {
+    struct flb_in_modbus_config *ctx = data;
+    if (!ctx) {
+        return 0;
+    }
+
+    config_destroy(ctx);
+
     return 0;
 }
 
